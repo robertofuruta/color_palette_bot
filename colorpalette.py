@@ -1,4 +1,7 @@
-
+"""
+This module generates a color palette of num_colors colors from a provided image at input_file.
+It saves it in the output_file and returns the list of strings of colors in hex.
+"""
 import os
 
 import matplotlib.pyplot as plt
@@ -7,15 +10,12 @@ import PIL
 from matplotlib.colors import LinearSegmentedColormap
 from scipy import cluster
 
-# import pandas as pd
-# import math
-# import colorsys
-# import click
 
-
+# partitions is the number of samples of color to collect in each axis.
 def color_palette_from_photo(input_file, output_file, num_colors=4, partitions=100):
     img = plt.imread(input_file)
-    np_image = np.empty((partitions*partitions, 3), int)  # 2 dim: r, g, b
+    # np_image is a flattened (partitions x partitions) array of colors, with three cols: r, g, b
+    np_image = np.empty((partitions*partitions, 3), int)
     height = len(img)
     width = len(img[0])
 
@@ -25,10 +25,11 @@ def color_palette_from_photo(input_file, output_file, num_colors=4, partitions=1
                      :] = np.array(img[int(height/100*i)][int(width/100*j)])
 
     color_palette = cluster.vq.kmeans(
-        cluster.vq.whiten(np_image), num_colors)[0]
+        cluster.vq.whiten(np_image), num_colors)[0]  # this divides by the std
 
     rgb_std = np_image.std(axis=0)
     for i in range(num_colors):
+        # this multiplies back the std
         color_palette[i, :] = rgb_std*color_palette[i]
 
     gradient = np.linspace(0, 1, 256)
@@ -42,7 +43,6 @@ def color_palette_from_photo(input_file, output_file, num_colors=4, partitions=1
     ax.set_axis_off()
 
     plt.savefig(output_file, dpi=200)
-    # plt.show()
 
     hex_colors = []
     for color in color_palette:
@@ -61,6 +61,4 @@ def main():
 
 
 if __name__ == '__main__':
-    # pylint: disable=no-value-for-parameter
-    # input('test')
     main()

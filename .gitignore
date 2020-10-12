@@ -1,0 +1,7 @@
+venv
+.vscode
+tmp
+out_test.png
+__pycache__
+telegram.token
+.DS_Store

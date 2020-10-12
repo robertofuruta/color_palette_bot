@@ -98,7 +98,8 @@ def palette(update, context):
         os.remove(output_file)
     except:
         context.bot.send_message(chat_id=update.effective_chat.id,
-                                 text=f"Sorry, something went wrong :c\nMaybe your image is too simple for me to find that many colors, try again with fewer.")
+                                 text="Sorry, something went wrong: c\nMaybe your image is too simple " +
+                                 "for me to find that many colors, try again with fewer.")
         print('uh oh :c')
 
 

@@ -1,7 +1,0 @@
-.gitignore
-venv
-.vscode
-out_test.png
-__pycache__
-telegram.token
-.DS_Store

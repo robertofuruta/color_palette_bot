@@ -14,6 +14,9 @@ from scipy import cluster
 # partitions is the number of samples of color to collect in each axis.
 def color_palette_from_photo(input_file, output_file, num_colors=4, partitions=100):
     img = plt.imread(input_file)
+    scale = 1
+    if isinstance(img[0][0][0], np.floating):
+        scale = 255
     # np_image is a flattened (partitions x partitions) array of colors, with three cols: r, g, b
     np_image = np.empty((partitions*partitions, 3), int)
     height = len(img)
@@ -22,7 +25,7 @@ def color_palette_from_photo(input_file, output_file, num_colors=4, partitions=1
     for i in range(partitions):
         for j in range(partitions):
             np_image[i*100+j,
-                     :] = np.array(img[int(height/100*i)][int(width/100*j)])
+                     :] = np.array(img[int(height/100*i)][int(width/100*j)])[:3]*scale
 
     color_palette = cluster.vq.kmeans(
         cluster.vq.whiten(np_image), num_colors)[0]  # this divides by the std
@@ -38,11 +41,21 @@ def color_palette_from_photo(input_file, output_file, num_colors=4, partitions=1
     cm = LinearSegmentedColormap.from_list(
         'color color_palette', color_palette/255, num_colors)
     fig, ax = plt.subplots(nrows=1)
-    fig.set_size_inches(num_colors, 1)
+    dpi = 64
+    fig.set_size_inches(width/dpi, 1*width/dpi/num_colors)
     ax.imshow(gradient, aspect='auto', cmap=(cm))
     ax.set_axis_off()
 
-    plt.savefig(output_file, dpi=200)
+    plt.savefig(output_file, dpi=dpi)
+    plt.close()
+
+    imgs = [PIL.Image.open(input_file), PIL.Image.open(output_file)]
+    # min_shape = sorted([(np.sum(i.size), i.size) for i in imgs])[0][1]
+    imgs_comb = np.vstack(
+        (np.asarray(i.resize([imgs[0].size[0], i.size[1]])) for i in imgs))
+    # imgs_comb = np.vstack(np.asarray(img) for img in imgs)
+    imgs_comb = PIL.Image.fromarray(imgs_comb)
+    imgs_comb.save(output_file)
 
     hex_colors = []
     for color in color_palette:

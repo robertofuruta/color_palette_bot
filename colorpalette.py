@@ -102,7 +102,7 @@ def main():
     output_file = 'out_universe.jpg'
 
     print(color_palette_from_photo(input_file,
-                                   output_file, num_colors=4, partitions=100))
+                                   output_file, num_colors=5, partitions=200))
 
 
 if __name__ == '__main__':

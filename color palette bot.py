@@ -33,7 +33,7 @@ def start(update, context):
 I'm a bot capable of creating color palettes from images you send me!
 To do so,
 1. Send me the image you want a collor palette from.
-2. Reply to the image you sent me with: '/palette' to get a 4 color palette or with '/palette N' \
+2. Reply to the image you sent me with: '/palette' to get a 5 color palette or with '/palette N' \
 replacing the N with the number of colors you want (between 2 and 10).
 This is a experimental personal project, it may be offline, so I may not respond :c""")
 
@@ -43,7 +43,7 @@ def help_command(update, context):
 I'm a bot capable of creating color palettes from images you send me!
 To do so,
 1. Send me the image you want a collor palette from.
-2. Reply to the image you sent me with: '/palette' to get a 4 color palette or with '/palette N' \
+2. Reply to the image you sent me with: '/palette' to get a 5 color palette or with '/palette N' \
 replacing the N with the number of colors you want (between 2 and 10).
 This is a experimental personal project, it may be offline, so I may not respond :c""")
 
@@ -58,7 +58,7 @@ def palette(update, context):
     try:
         num_colors = int(context.args[0])
     except:
-        num_colors = 4
+        num_colors = 5
     if num_colors not in range(2, 11):
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=f"Sorry, I only can generate 2 to 10 colors.")
@@ -69,13 +69,8 @@ def palette(update, context):
         print('ress', resolutions)
         media = update.message.reply_to_message.photo[resolutions-1].get_file()
     except:
-        # # print('hm, not a Telegram image file...')
-        # try:
-        #     media = update.message.reply_to_message.photo[0].get_file()
-        # except:
         try:
             media = update.message.reply_to_message.document.get_file()
-            # print("it'a a file type, let me try to parse it...")
         except:
             context.bot.send_message(chat_id=update.effective_chat.id,
                                      text="Hey, thet's not and image! :|\nYou have to first send me an image, than reply to it with that command ;)")
@@ -108,7 +103,8 @@ def palette(update, context):
     output_file = f'{directory}out_{media_id}.{media_type}'
 
     # try:
-    hex_colors = color_palette_from_photo(input_file, output_file, num_colors)
+    hex_colors = color_palette_from_photo(
+        input_file, output_file, num_colors, select=True)
     os.remove(input_file)
 
     hex_colors_string = 'The colors are:\n'

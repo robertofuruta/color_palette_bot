@@ -59,24 +59,26 @@ def palette(update, context):
         num_colors = int(context.args[0])
     except:
         num_colors = 4
-        # num_menu(update, context)
-        # ConversationHandler(button)
-        # print(num_colors)
-
     if num_colors not in range(2, 11):
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=f"Sorry, I only can generate 2 to 10 colors.")
         return
 
     try:
-        media = update.message.reply_to_message.photo[0].get_file()
+        resolutions = len(update.message.reply_to_message.photo)
+        print('ress', resolutions)
+        media = update.message.reply_to_message.photo[resolutions-1].get_file()
     except:
-        # print('hm, not a Telegram image file...')
+        # # print('hm, not a Telegram image file...')
+        # try:
+        #     media = update.message.reply_to_message.photo[0].get_file()
+        # except:
         try:
             media = update.message.reply_to_message.document.get_file()
             # print("it'a a file type, let me try to parse it...")
         except:
-            print("Hey, thet's not and image! :|")
+            context.bot.send_message(chat_id=update.effective_chat.id,
+                                     text="Hey, thet's not and image! :|\nYou have to first send me an image, than reply to it with that command ;)")
             return
     media_id = media.file_id
     media_type = f"{media.file_path}".split('.')[-1]
@@ -87,9 +89,9 @@ def palette(update, context):
 
     if (media == None):
         return
-    if (media.file_size > 15619356):
+    if (media.file_size > 10**6):
         context.bot.send_message(chat_id=update.effective_chat.id,
-                                 text=f"Wow that's large!\nI can't deal with that!!")
+                                 text=f"Wow that's large!\nI can't deal with that!! (over 10MB)\nYou can compress it's size by sending it as image, not as document.")
         return
 
     context.bot.send_message(chat_id=update.effective_chat.id,

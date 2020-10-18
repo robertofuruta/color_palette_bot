@@ -20,12 +20,12 @@ from colorpalette import color_palette_from_photo
 matplotlib.use('Agg')
 
 
-# Enable logging
-logging.basicConfig(filename='color_palette_bot.log',
-                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
-                    )
-
-logger = logging.getLogger(__name__)
+# Updates de logging and sends the entry to the private logging channel.
+def log(context, log_entry):
+    logging.info(log_entry)
+    context.bot.send_message(chat_id=channel_chat_id,
+                             text=log_entry)
+    return
 
 
 def start(update, context):
@@ -53,8 +53,8 @@ def unknown(update, context):
 
 
 def palette(update, context):
-    logging.info(
-        f"@{update.message.from_user['username']}: {update.message.from_user['first_name']} {update.message.from_user['last_name']} requested a plaette...")
+    request_str = f"@{update.message.from_user['username']}: {update.message.from_user['first_name']} {update.message.from_user['last_name']} requested a plaette..."
+    log(context, request_str)
 
     try:
         num_colors = int(context.args[0])
@@ -63,7 +63,7 @@ def palette(update, context):
     if num_colors not in range(2, 11):
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=f"Sorry, I only can generate 2 to 10 colors.")
-        logging.info(f'Falied: wrong N: {num_colors}.')
+        log(context, f'Falied: wrong N: {num_colors}.')
         return
 
     try:
@@ -76,14 +76,14 @@ def palette(update, context):
         except:
             context.bot.send_message(chat_id=update.effective_chat.id,
                                      text="Hey, thet's not and image! :|\nYou have to first send me an image, than reply to it with that command ;)")
-            logging.info('Falied: not an image.')
+            log(context, 'Falied: not an image.')
             return
     media_id = media.file_id
     media_type = f"{media.file_path}".split('.')[-1]
     if not media_type in ['png', 'PNG', 'jpg', 'JPG', 'jpeg', 'JPEG']:
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=f"I don't regnize this file as an image, sorry :/\nI only know how to precess png and jpg images!")
-        logging.info('Falied: not an image.')
+        log(context, 'Falied: not an image.')
         return
 
     if (media == None):
@@ -91,7 +91,7 @@ def palette(update, context):
     if (media.file_size > 10**6):
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=f"Wow that's large!\nI can't deal with that!! (over 10MB)\nYou can compress it's size by sending it as image, not as document.")
-        logging.info('Falied: too large.')
+        log(context, 'Falied: too large.')
         return
 
     context.bot.send_message(chat_id=update.effective_chat.id,
@@ -121,11 +121,21 @@ def palette(update, context):
     context.bot.send_photo(chat_id=update.effective_chat.id,
                            photo=open(f"{output_file}", 'rb'))
     os.remove(output_file)
-    logging.info('Done successfuly.')
+    log(context, 'Done successfuly.')
 
 
 def main():
+
+    # Enable logging
+    logging.basicConfig(filename='color_palette_bot.log',
+                        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
+                        )
+
+    logger = logging.getLogger(__name__)
+
     token = open("telegram.token", "r").read()
+    global channel_chat_id
+    channel_chat_id = open("channel_chat.id", "r").read()
     updater = Updater(token=token, use_context=True)
     dp = updater.dispatcher
 
@@ -137,6 +147,9 @@ def main():
 
     # Start the Bot
     updater.start_polling()
+    log(updater, "Booting up...")
+    updater.idle()
+    log(updater, "Good bye!")
 
 
 if __name__ == '__main__':

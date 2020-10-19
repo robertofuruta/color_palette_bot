@@ -27,6 +27,7 @@ def log(context, log_entry):
     logging.info(log_entry)
     context.bot.send_message(chat_id=channel_chat_id,
                              text=log_entry)
+    print(log_entry)
     return
 
 
@@ -70,7 +71,6 @@ def palette(update, context):
 
     try:
         resolutions = len(update.message.reply_to_message.photo)
-        print('ress', resolutions)
         media = update.message.reply_to_message.photo[resolutions-1].get_file()
     except:
         try:

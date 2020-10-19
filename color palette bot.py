@@ -133,9 +133,15 @@ def main():
 
     logger = logging.getLogger(__name__)
 
-    token = open("telegram.token", "r").read()
+    try:
+        token = os.environ('TELEGRAM_TOKEN')
+    except:
+        token = open("telegram.token", "r").read()
     global channel_chat_id
-    channel_chat_id = open("channel_chat.id", "r").read()
+    try:
+        channel_chat_id = os.environ('CHANNEL_CHAT_ID')
+    except:
+        channel_chat_id = open("channel_chat.id", "r").read()
     updater = Updater(token=token, use_context=True)
     dp = updater.dispatcher
 

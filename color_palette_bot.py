@@ -142,6 +142,7 @@ def main():
         channel_chat_id = os.environ('CHANNEL_CHAT_ID')
     except:
         channel_chat_id = open("channel_chat.id", "r").read()
+
     updater = Updater(token=token, use_context=True)
     dp = updater.dispatcher
 

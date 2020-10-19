@@ -1,1 +1,1 @@
-worker: python bot.py
+worker: python color_palette_bot.py

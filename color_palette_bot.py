@@ -11,9 +11,11 @@ import time
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
-from telegram.bot import Bot
-from telegram.ext import CommandHandler, Filters, MessageHandler, Updater, CallbackQueryHandler, ConversationHandler
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.bot import Bot
+from telegram.ext import (CallbackQueryHandler, CommandHandler,
+                          ConversationHandler, Filters, MessageHandler,
+                          Updater)
 
 from colorpalette import color_palette_from_photo
 
@@ -134,12 +136,12 @@ def main():
     logger = logging.getLogger(__name__)
 
     try:
-        token = os.environ('TELEGRAM_TOKEN')
+        token = os.environ['TELEGRAM_TOKEN']
     except:
         token = open("telegram.token", "r").read()
     global channel_chat_id
     try:
-        channel_chat_id = os.environ('CHANNEL_CHAT_ID')
+        channel_chat_id = os.environ['CHANNEL_CHAT_ID']
     except:
         channel_chat_id = open("channel_chat.id", "r").read()
 
